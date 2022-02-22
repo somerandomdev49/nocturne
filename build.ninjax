@@ -1,0 +1,30 @@
+ldflags = -L/usr/lib -lLLVMCore -lLLVMRemarks -lLLVMBitstreamReader -lLLVMBinaryFormat -lLLVMSupport -lLLVMDemangle -lrt -ldl -lpthread -lm -lz -ltinfo
+
+clangflags = -fdiagnostics-color
+
+@set TGT r
+@if is %$DEBUG%
+debugflags = -g
+@set TGT d
+@fi
+
+rule cxx
+  command = clang++ -c $in -o $out -std=c++20 -MD -MF $out.d $debugflags $clangflags
+  depfile = $out.d
+
+rule ld
+  command = clang++ $in -o $out $ldflags $debugflags $clangflags `llvm-config --ldflags --system-libs --libs all`
+
+build build/%$TGT%/ast.o: cxx ast.cpp
+build build/%$TGT%/codegen.o: cxx codegen.cpp
+build build/%$TGT%/lexer.o: cxx lexer.cpp
+build build/%$TGT%/main.o: cxx main.cpp
+build build/%$TGT%/parser.o: cxx parser.cpp
+build build/%$TGT%/types.o: cxx types.cpp
+
+build main: ld build/%$TGT%/ast.o     $
+               build/%$TGT%/codegen.o $
+               build/%$TGT%/lexer.o   $
+               build/%$TGT%/main.o    $
+               build/%$TGT%/parser.o  $
+               build/%$TGT%/types.o
