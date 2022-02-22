@@ -1,5 +1,7 @@
 #include "types.hpp"
 
+#include <iostream>
+
 namespace noct
 {
 	NumericType platformPointerType = NumericType::u64;

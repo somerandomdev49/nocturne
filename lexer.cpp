@@ -31,21 +31,89 @@ namespace noct
 			current.type = TokenType::eof;
 			current.value = "<EOF>";
 		}
-		else switch(lexer.in.peek())
+		else
 		{
-		case '-':
-			current.type = lexer.in.get();
-			if(lexer.in.peek() == '>')
-			{
-				lexer.in.get();
-				current.type = TokenType::opr_arrow;
-				current.value = "->";
-			}
-			break;
-		default:
+			current.type = lexer.in.peek();
 			current.value = std::string(1, lexer.in.peek());
-			current.type = lexer.in.get();
-			break;
+
+			switch(lexer.in.peek())
+			{
+			case '-':
+				lexer.in.get();
+				if(lexer.in.peek() == '>')
+				{
+					current.type = TokenType::opr_arrow;
+					current.value += lexer.in.get();
+				}
+				else  if(lexer.in.peek() == '-')
+				{
+					current.type = TokenType::opr_decnt;
+					current.value += lexer.in.get();
+				}
+				break;
+			case '=':
+				current.type = lexer.in.get();
+				if(lexer.in.peek() == '=')
+				{
+					current.type = TokenType::opr_equal;
+					current.value += lexer.in.get();
+				}
+				break;
+			case '!':
+				if(lexer.in.peek() == '=')
+				{
+					current.type = TokenType::opr_noteq;
+					current.value += lexer.in.get();
+				}
+				break;
+			case '+':
+				if(lexer.in.peek() == '+')
+				{
+					current.type = TokenType::opr_incnt;
+					current.value += lexer.in.get();
+				}
+				break;
+			case '&':
+				if(lexer.in.peek() == '&')
+				{
+					current.type = TokenType::opr_d_amp;
+					current.value += lexer.in.get();
+				}
+				break;
+			case '|':
+				if(lexer.in.peek() == '|')
+				{
+					current.type = TokenType::opr_d_bar;
+					current.value += lexer.in.get();
+				}
+				break;
+			case '>':
+				if(lexer.in.peek() == '=')
+				{
+					current.type = TokenType::opr_gteql;
+					current.value += lexer.in.get();
+				} else if(lexer.in.peek() == '>')
+				{
+					current.type = TokenType::opr_shftr;
+					current.value += lexer.in.get();
+				}
+				break;
+			case '<':
+				if(lexer.in.peek() == '=')
+				{
+					current.type = TokenType::opr_gteql;
+					current.value += lexer.in.get();
+				} else if(lexer.in.peek() == '<')
+				{
+					current.type = TokenType::opr_shftl;
+					current.value += lexer.in.get();
+				}
+				break;
+			default:
+				current.value = std::string(1, lexer.in.peek());
+				current.type = lexer.in.get();
+				break;
+			}
 		}
 
 		return *this;
@@ -53,3 +121,17 @@ namespace noct
 
 	auto Lexer::begin() -> TokenIterator { return TokenIterator{ *this }; }
 }
+
+/*
+opr_arrow, // ->
+opr_equal, // ==
+opr_noteq, // !=
+opr_incnt, // ++
+opr_decnt, // --
+opr_d_amp, // &&
+opr_d_bar, // ||
+opr_lteql, // <=
+opr_gteql, // >=
+opr_shftr, // >>
+opr_shftl, // <<
+*/

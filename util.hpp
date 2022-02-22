@@ -1,16 +1,29 @@
 #pragma once
 #include <concepts>
+#include <type_traits>
 #include <memory>
 #include <vector>
 
 namespace noct
 {
+	// For some reason, brew clang-11 lacks most concept implementations :(
+	
+	template<typename T>
+	concept Integral = requires {
+		requires std::is_integral_v<T>;
+	};
+
+	template<typename T, typename U>
+	concept ConvertibleTo = requires {
+		requires std::is_convertible_v<T, U>;
+	};
+
 	template<typename I, typename T>
 	concept Iterator = requires(I i, I j)
 	{
-		{ ++i } -> std::convertible_to<I>;
-		{  *i } -> std::convertible_to<T>;
-		{ i == j } -> std::convertible_to<bool>;
+		{ ++i } -> ConvertibleTo<I>;
+		{  *i } -> ConvertibleTo<T>;
+		{ i == j } -> ConvertibleTo<bool>;
 	};
 	
 	template<typename I, typename T>
@@ -74,7 +87,7 @@ namespace noct
 	template<typename T>
 	using Ptr = std::shared_ptr<T>;
 
-	template<std::integral T>
+	template<Integral T>
 	constexpr auto pow(T base, T val) -> T
 	{
 		if(val == 1 || base == 1) return base;

@@ -1,7 +1,6 @@
 #pragma once
 #include "util.hpp"
 
-#include <ranges>
 #include <cstddef>
 #include <cstdint>
 #include <algorithm>
@@ -35,7 +34,7 @@ namespace noct
 
 	extern NumericType platformPointerType;
 
-	template<std::integral T>
+	template<Integral T>
 	constexpr auto getSmallestIntegerTypeFor(T val) -> NumericType
 	{
 		if(val >= 0)
@@ -60,7 +59,7 @@ namespace noct
 		return NumericType::unknown;
 	}
 
-	template<std::integral T>
+	template<Integral T>
 	constexpr auto getSuitableIntegerTypeFor(T val) -> NumericType
 	{
 		if(val >= 0)

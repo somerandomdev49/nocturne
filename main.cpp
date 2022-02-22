@@ -5,7 +5,7 @@
 
 auto main(int argc, char *argv[]) -> int
 {
-	if(argc < 2) return 1;
+	if(argc < 3) return 1;
 
 	std::ifstream inp(argv[1]);
 	if(!inp) return 1;
@@ -48,9 +48,9 @@ auto main(int argc, char *argv[]) -> int
 	}
 
 	gen.set(noct::GeneratorOpt::ShouldOutputObject, noct::GeneratorBool::Yes);
-	gen.set(noct::GeneratorOpt::OutputObjectFile, "test.o");
+	gen.set(noct::GeneratorOpt::OutputObjectFile, std::string(argv[2]));
 	gen.set(noct::GeneratorOpt::ShouldOutputIR, noct::GeneratorBool::Yes);
-	gen.set(noct::GeneratorOpt::OutputIRFile, "test.ll");
+	gen.set(noct::GeneratorOpt::OutputIRFile, std::string(argv[2]) + ".ll");
 	gen.output();
 
 	std::cout.flush();

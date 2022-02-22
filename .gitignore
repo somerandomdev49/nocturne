@@ -1,0 +1,7 @@
+noct
+local
+build.ninja
+build
+bin
+.vscode
+.ninja_*
