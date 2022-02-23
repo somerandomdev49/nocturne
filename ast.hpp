@@ -18,6 +18,12 @@ namespace noct
 		std::vector<std::string> argNames;
 	};
 
+	struct VarDeclaration
+	{
+		Ptr<Type> type;
+		std::string name;
+	};
+
 	using TypeRes = Result<Ptr<Type>>;
 	
 	struct ASTNodeImpl;
@@ -28,6 +34,15 @@ namespace noct
 
 		virtual TypeRes type(TypecheckEnv &env) const noexcept = 0;
 		virtual void print(std::ostream &out, int indent) const noexcept = 0;
+	};
+
+	struct ASTVar : AST
+	{
+		VarDeclaration decl;
+		Ptr<AST> value;
+
+		TypeRes type(TypecheckEnv &env) const noexcept override;
+		void print(std::ostream &out, int indent) const noexcept override;
 	};
 
 	struct ASTFunc : AST

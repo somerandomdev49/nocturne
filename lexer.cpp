@@ -16,6 +16,7 @@ namespace noct
 			
 			/**/ if(current.value == "fn"  ) current.type = TokenType::kwd_fn;
 			else if(current.value == "if"  ) current.type = TokenType::kwd_if;
+			else if(current.value == "let" ) current.type = TokenType::kwd_let;
 			else if(current.value == "else") current.type = TokenType::kwd_else;
 			else                             current.type = TokenType::idn;
 		}

@@ -1,2 +1,2 @@
-
-fn main -> i32 { 3 }
+let test: i32 = 3;
+fn main -> i32 { test }

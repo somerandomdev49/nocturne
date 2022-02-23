@@ -111,12 +111,36 @@ namespace noct
 		return nullptr;
 	}
 
+	Ptr<AST> Parser::parseVariable(It &it)
+	{
+		auto f = Ptr<ASTVar>(new ASTVar());
+		expect(it, TokenType::kwd_let, "the 'let' keyword") && it.get();
+
+		if(!expect(it, TokenType::idn, "the variable's name"))
+			f->decl.name = "<error>";
+		else
+			f->decl.name = it.get().value;
+		
+		expect(it, ':', "a colon") && it.get();
+		f->decl.type = parseType(it);
+
+		if(it.peek().type == '=')
+		{
+			it.get();
+			f->value = parseExpr(it);
+		}
+
+		expect(it, ';', "a semicolon") && it.get();
+
+		return f;
+	}
+
 	Ptr<AST> Parser::parseFunction(It &it)
 	{
 		auto f = Ptr<ASTFunc>(new ASTFunc());
 		expect(it, TokenType::kwd_fn, "the 'fn' keyword") && it.get();
 
-		if(!expect(it, TokenType::idn, "the function name"))
+		if(!expect(it, TokenType::idn, "the function's name"))
 			f->decl.name = "<error>";
 		else
 			f->decl.name = it.get().value;

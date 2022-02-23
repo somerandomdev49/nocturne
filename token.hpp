@@ -30,6 +30,7 @@ namespace noct
 		opr_shftl, // <<
 		kwd_fn,
 		kwd_if,
+		kwd_let,
 		kwd_else,
 	};
 
@@ -54,6 +55,7 @@ namespace noct
 		case TokenType::opr_shftl: return "opr_shftl";
 		case TokenType::kwd_fn: return "kwd_fn";
 		case TokenType::kwd_if: return "kwd_if";
+		case TokenType::kwd_let: return "kwd_let";
 		case TokenType::kwd_else: return "kwd_else";
 		default: return "?";
 		}

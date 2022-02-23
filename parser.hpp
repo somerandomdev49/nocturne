@@ -26,6 +26,7 @@ namespace noct
 		Ptr<AST> parseBlock(It &it);
 		Ptr<AST> parseReturn(It &it);
 		Ptr<AST> parseFunction(It &it);
+		Ptr<AST> parseVariable(It &it);
 		Ptr<AST> parseTopLevel(It &it);
 		std::vector<Ptr<AST>> parseProgram(It &it);
 	};
