@@ -32,6 +32,7 @@ auto main(int argc, char *argv[]) -> int
 	for(const auto &node : program)
 	{
 		node->print(std::cout, 0);
+		std::cout << "\n";
 		if(node->type(typecheckEnv).error) {
 			std::cout << "Type error!" << std::endl;
 			break;
@@ -40,12 +41,8 @@ auto main(int argc, char *argv[]) -> int
 
 	noct::Generator gen(argv[1]);
 	
-	if(auto f = dynamic_cast<noct::ASTFunc*>(program[0].get()); f != nullptr)
-		gen.generateFunction(f);
-	else
-	{
-		return 2;
-	}
+	for(const auto &n : program)
+		gen.generate(n.get());
 
 	gen.set(noct::GeneratorOpt::ShouldOutputObject, noct::GeneratorBool::Yes);
 	gen.set(noct::GeneratorOpt::OutputObjectFile, std::string(argv[2]));

@@ -67,9 +67,9 @@ namespace noct
 	Ptr<AST> Parser::parseAtomic(It &it)
 	{
 		auto t = it.get();
-		// if(t.type == TokenType::idn) 
-		if(t.type == TokenType::num) return Ptr<ASTInt>(new ASTInt(std::stoull(t.value)));
-		else error("expected a number!");
+		/**/ if(t.type == TokenType::num) return Ptr<ASTInt>(new ASTInt(std::stoull(t.value)));
+		else if(t.type == TokenType::idn) return Ptr<ASTIdn>(new ASTIdn(t.value));
+		else error("expected a number or a variable!");
 		return nullptr;
 	}
 
@@ -158,10 +158,11 @@ namespace noct
 
 	Ptr<AST> Parser::parseTopLevel(It &it)
 	{
-		if(it.peek().type == TokenType::kwd_fn)
-			return parseFunction(it);
+		/**/ if(it.peek().type == TokenType::kwd_fn)  return parseFunction(it);
+		else if(it.peek().type == TokenType::kwd_let) return parseVariable(it);
 		
-		return nullptr;
+		error(expectedErrorMessage("Expected a top-level statement.", it.get()));
+		return parseTopLevel(it);
 	}
 
 	std::vector<Ptr<AST>> Parser::parseProgram(It &it)

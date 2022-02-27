@@ -2,13 +2,23 @@
 #include "util.hpp"
 #include "types.hpp"
 
+#include <unordered_map>
 #include <iostream>
+#include <string>
 
 namespace noct
 {
-	struct TypecheckEnv
+	class TypecheckEnv
 	{
-		
+	public:
+		auto has(const std::string &name) -> bool;
+		auto get(const std::string &name) -> Ptr<Type>;
+		void set(const std::string &name, Ptr<Type> t);
+	
+	private:
+		using MapType = std::unordered_map<std::string, Ptr<Type>>;
+		auto it_(const std::string &name) -> Result<MapType::iterator>;
+		MapType values;
 	};
 	
 	struct FuncDeclaration
@@ -34,6 +44,16 @@ namespace noct
 
 		virtual TypeRes type(TypecheckEnv &env) const noexcept = 0;
 		virtual void print(std::ostream &out, int indent) const noexcept = 0;
+	};
+
+	struct ASTIdn : AST
+	{
+		std::string name;
+
+		ASTIdn(const std::string &name) : name(name) { }
+
+		TypeRes type(TypecheckEnv &env) const noexcept override;
+		void print(std::ostream &out, int indent) const noexcept override;
 	};
 
 	struct ASTVar : AST

@@ -30,6 +30,7 @@ namespace noct
 		~Generator();
 
 		void generateFunction(ASTFunc *func);
+		void generate(AST *node);
 		void output();
 		
 		void set(GeneratorOpt opt, GeneratorBool value);

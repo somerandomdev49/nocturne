@@ -2,6 +2,7 @@
 #include "util.hpp"
 #include "fmt.hpp"
 
+#include <stack>
 #include <memory>
 #include <initializer_list>
 
@@ -42,12 +43,55 @@ namespace
 
 namespace noct
 {
+	struct Variable
+	{
+		Ptr<Type> type;
+		llvm::Type llvmType;
+		std::string name;
+	};
+
+	struct Global : Variable
+	{
+		Ptr<llvm::GlobalVariable> *llvmVar;
+	};
+
+	struct Local : Variable
+	{
+		llvm::Value *llvmVar;
+	};
+
+	class Env
+	{
+	public:
+		auto has(const std::string &name) -> bool
+		{
+			return !it_(name).error;
+		}
+
+		auto get(const std::string &name) -> Variable*;
+		void set(const std::string &name, Variable *t);
+
+		bool isLoop, isFunc;
+	
+	private:
+		using MapType = std::unordered_map<std::string, std::unique_ptr<Variable>>;
+		auto it_(const std::string &name) -> Result<MapType::iterator>
+		{
+			auto f = values.find(name);
+			return { f == values.end(), f };
+		}
+
+		MapType values;
+	};
+
 	struct GeneratorImpl
 	{
 		std::string moduleName;
 		llvm::LLVMContext context;
 		llvm::IRBuilder<> builder;
 		std::unique_ptr<llvm::Module> codeModule;
+
+		std::vector<Env> baseEnv;
 	
 		bool shouldOutputAssembly;
 		std::string outputAssemblyFile;
@@ -60,6 +104,7 @@ namespace noct
 
 		GeneratorImpl(const std::string &moduleName);
 		void generateFunction(ASTFunc *func);
+		void generateGlobal(ASTVar *var);
 
 		void output();
 
@@ -115,6 +160,40 @@ namespace noct
 
 		return f;
 	}
+	
+	struct ASTVarImpl : ASTNodeImpl
+	{
+		ASTVar *node;
+		ASTVarImpl(ASTVar *node) : node(node) {}
+
+		llvm::Value *gen(GeneratorImpl &env) const noexcept override
+		{
+			llvm::Constant *initializer = nullptr;
+			if(node->value)
+			{
+				auto v = node->value->impl_->gen(env);
+				if(!llvm::isa<llvm::Constant>(v))
+					initializer = llvm::cast<llvm::Constant>(v);
+				else
+				{
+					error("Cannot initialize global '{0}' with a non-constant!", node->decl.name);
+					return nullptr;
+				}
+			}
+			
+			env.baseEnv.front().set(node->decl.name,
+			llvm::GlobalVariable(
+				convertTypeToLLVMType(env, node->decl.type),
+				false, llvm::GlobalVariable::ExternalLinkage,
+				initializer, node->decl.name);
+		}
+
+		virtual void provideImpls(GeneratorImpl &env) const noexcept override
+		{
+			if(node->value != nullptr)
+				env.provideImpls(node->value.get());
+		}
+	};
 
 	struct ASTFuncImpl : ASTNodeImpl
 	{
@@ -210,6 +289,12 @@ namespace noct
 		auto f = (llvm::Function *)func->impl_->gen(*this);
 	}
 
+	void GeneratorImpl::generateGlobal(ASTVar *var)
+	{
+		provideImpls(var);
+		auto g = (llvm::GlobalVariable *)var->impl_->gen(*this);
+	}
+
 	void GeneratorImpl::output()
 	{
 		// codeModule->print(llvm::errs(), nullptr);
@@ -290,6 +375,10 @@ namespace noct
 		{
 			n->impl_ = Ptr<ASTFuncImpl>(new ASTFuncImpl(n));
 		}
+		else if(auto n = dynamic_cast<ASTVar*>(ast); n != nullptr)
+		{
+			n->impl_ = Ptr<ASTVarImpl>(new ASTVarImpl(n));
+		}
 
 		if(ast->impl_) ast->impl_->provideImpls(*this);
 	}
@@ -343,5 +432,14 @@ namespace noct
 	}
 
 	void Generator::generateFunction(ASTFunc *func) { impl->generateFunction(func); }
+	void Generator::generate(AST *ast)
+	{
+#define TRY_CAST(TYPE) auto n = dynamic_cast<TYPE*>(ast); n != nullptr
+
+		/**/ if(TRY_CAST(ASTFunc)) impl->generateFunction(n);
+		else if(TRY_CAST(ASTVar)) impl->generateGlobal(n);
+
+#undef TRY_CAST
+	}
 	void Generator::output() { impl->output(); }
 }
