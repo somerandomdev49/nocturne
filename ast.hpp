@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <string>
+#include <utility>
 
 namespace noct
 {
@@ -50,7 +51,7 @@ namespace noct
 	{
 		std::string name;
 
-		ASTIdn(const std::string &name) : name(name) { }
+		ASTIdn(std::string name) : name(std::move(name)) { }
 
 		TypeRes type(TypecheckEnv &env) const noexcept override;
 		void print(std::ostream &out, int indent) const noexcept override;

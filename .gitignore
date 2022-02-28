@@ -6,3 +6,4 @@ bin
 .vscode
 .ninja_*
 compile_commands.json
+.cache

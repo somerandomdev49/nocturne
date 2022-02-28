@@ -5,6 +5,8 @@ Diagnostics:
       modernize-use-trailing-return-type,
       readability-braces-around-statements,
       readability-qualified-auto,
+      readability-implicit-bool-conversion,
+      readability-convert-member-functions-to-static
     ]
     CheckOptions:
       readability-identifier-naming.VariableCase: snake_case

@@ -10,14 +10,14 @@ namespace noct
 	{
 		using It = BufferedIterator<Token, TokenIterator>;
 
-		void error(const std::string &msg);
 		bool expect(It &it, char type, const std::string &msg = "");
+		bool expectAndGet(It &it, char type, const std::string &msg = "");
 
 		Ptr<Type> parseTypeAtomic(It &it);
-		Ptr<Type> parseTypeSuffix(It &it, Ptr<Type> b);
+		Ptr<Type> parseTypeSuffix(It &it, const Ptr<Type> &b);
 		Ptr<Type> parseType(It &it);
 		
-		Ptr<AST> parseSuffix(It &it, Ptr<AST> b);
+		Ptr<AST> parseSuffix(It &it, const Ptr<AST> &b);
 		Ptr<AST> parseAtomic(It &it);
 		Ptr<AST> parsePrefix(It &it);
 		Ptr<AST> parseInfix(It &it);

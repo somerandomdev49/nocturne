@@ -32,10 +32,14 @@ namespace noct
 			if(fmt[i] == '{')
 			{
 				++i;
-				std::size_t k = fmt[i++] - '0', j = 0;
+
+				std::size_t k = fmt[i++] - '0';
+				std::size_t j = 0;
+
 				std::initializer_list<int> _ = {
 					(j++, (k == j - 1 ? ((ss << args), 0) : 0))...
 				};
+				
 				++i;
 			}
 			else ss << fmt[i++];

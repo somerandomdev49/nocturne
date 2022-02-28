@@ -2,29 +2,32 @@
 ---
 Language: Cpp
 UseTab: AlignWithSpaces
+IndentWidth: 4
+TabWidth: 4
 BreakBeforeBraces: Allman
 AllowShortIfStatementsOnASingleLine: false
-ColumnLimit: 100
+ColumnLimit: 88
 IndentCaseLabels: false
-SortInlcudes: Never
-SeparateDefinitionBlocks: Always
+SortIncludes: Never
+# SeparateDefinitionBlocks: Always
 ReferenceAlignment: Right
 PointerAlignment: Right
-PackConstructorInitializers: BinPack
+# PackConstructorInitializers: BinPack
 NamespaceIndentation: All
-LambdaBodyIndenation: Signature
+LambdaBodyIndentation: Signature
 EmptyLineBeforeAccessModifier: Always
 BreakStringLiterals: true
 BreakConstructorInitializers: BeforeColon
 BreakBeforeTernaryOperators: true
-BreakBeforeConceptDeclarations: Always
-BreakBeforeBinaryOperators: Always
+BreakBeforeConceptDeclarations: true
+BreakBeforeBinaryOperators: true
 BinPackParameters: true
-AlwaysBreakTemplateDeclarations: Always
+# InsertBraces: false -- clang-format 15
+AlwaysBreakTemplateDeclarations: true
 AlwaysBreakBeforeMultilineStrings: false
 AllowShortLoopsOnASingleLine: true
 AllowShortLambdasOnASingleLine: true
-AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortIfStatementsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortBlocksOnASingleLine: true
@@ -33,4 +36,8 @@ AlignOperands: AlignAfterOperator
 AlignEscapedNewlines: Left
 AlignConsecutiveDeclarations: Consecutive
 AlignArrayOfStructures: Right
-AlignAfterOpenBracket: BlockIndent
+AlignAfterOpenBracket: Align
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeParens: Never

@@ -55,7 +55,7 @@ namespace noct
 		
 		auto peek() -> T&
 		{
-			if(not buffer_.empty())
+			if(buffer_.empty())
 			{
 				++iter_;
 				auto v = *iter_;
@@ -88,8 +88,8 @@ namespace noct
 	using Ptr = std::shared_ptr<T>;
 
 	template<typename T, typename ...Args>
-	auto make_ptr(Args &&...args) -> Ptr<T> {
-		return std::make_shared(std::forward<Args...>(args...));
+	auto makePtr(Args &&...args) -> Ptr<T> {
+		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 
 	template<Integral T>

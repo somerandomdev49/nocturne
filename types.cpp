@@ -13,7 +13,7 @@ namespace noct
 
 	bool TypeNumeric::assignable(Ptr<Type> out) const noexcept
 	{
-		if(auto t = dynamic_cast<TypeNumeric*>(out.get()); t != nullptr)
+		if(auto t = dynamic_cast<TypeNumeric *>(out.get()); t != nullptr)
 			return size() >= t->size();
 
 		return false;
@@ -31,7 +31,7 @@ namespace noct
 
 	bool TypePointer::assignable(Ptr<Type> out) const noexcept
 	{
-		if(auto t = dynamic_cast<TypeNumeric*>(out.get()); t != nullptr)
+		if(auto t = dynamic_cast<TypeNumeric *>(out.get()); t != nullptr)
 			return size() >= t->size();
 
 		return false;
@@ -42,4 +42,4 @@ namespace noct
 		base->print(out);
 		out << "*";
 	}
-}
+} // namespace noct

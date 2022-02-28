@@ -3,39 +3,11 @@
 
 namespace noct
 {
-	auto TokenIterator::operator++() -> TokenIterator&
+	namespace
 	{
-		while(std::isspace(lexer.in.peek()))
-			lexer.in.get();
-		
-		/**/ if(std::isalpha(lexer.in.peek()) || lexer.in.peek() == '_')
+		Token getSpecialToken(Lexer &lexer, const Token &d)
 		{
-			current.value = "";
-			while(std::isalnum(lexer.in.peek()) || lexer.in.peek() == '_')
-				current.value += lexer.in.get();
-			
-			/**/ if(current.value == "fn"  ) current.type = TokenType::kwd_fn;
-			else if(current.value == "if"  ) current.type = TokenType::kwd_if;
-			else if(current.value == "let" ) current.type = TokenType::kwd_let;
-			else if(current.value == "else") current.type = TokenType::kwd_else;
-			else                             current.type = TokenType::idn;
-		}
-		else if(std::isdigit(lexer.in.peek()))
-		{
-			current.type = TokenType::num;
-			current.value = "";
-			while(std::isdigit(lexer.in.peek()) || lexer.in.peek() == '_')
-				current.value += lexer.in.get();
-		}
-		else if(lexer.in.peek() == EOF)
-		{
-			current.type = TokenType::eof;
-			current.value = "<EOF>";
-		}
-		else
-		{
-			current.type = lexer.in.peek();
-			current.value = std::string(1, lexer.in.peek());
+			Token current = d;
 
 			switch(lexer.in.peek())
 			{
@@ -46,7 +18,7 @@ namespace noct
 					current.type = TokenType::opr_arrow;
 					current.value += lexer.in.get();
 				}
-				else  if(lexer.in.peek() == '-')
+				else if(lexer.in.peek() == '-')
 				{
 					current.type = TokenType::opr_decnt;
 					current.value += lexer.in.get();
@@ -93,7 +65,8 @@ namespace noct
 				{
 					current.type = TokenType::opr_gteql;
 					current.value += lexer.in.get();
-				} else if(lexer.in.peek() == '>')
+				}
+				else if(lexer.in.peek() == '>')
 				{
 					current.type = TokenType::opr_shftr;
 					current.value += lexer.in.get();
@@ -104,24 +77,68 @@ namespace noct
 				{
 					current.type = TokenType::opr_gteql;
 					current.value += lexer.in.get();
-				} else if(lexer.in.peek() == '<')
+				}
+				else if(lexer.in.peek() == '<')
 				{
 					current.type = TokenType::opr_shftl;
 					current.value += lexer.in.get();
 				}
 				break;
 			default:
-				current.value = std::string(1, lexer.in.peek());
+				// current.value = std::string(1, lexer.in.peek());
 				current.type = lexer.in.get();
 				break;
 			}
+
+			return current;
+		}
+	} // namespace
+
+	auto TokenIterator::operator++() -> TokenIterator &
+	{
+		while(std::isspace(lexer.in.peek())) lexer.in.get();
+
+		if(std::isalpha(lexer.in.peek()) || lexer.in.peek() == '_')
+		{
+			current.value = "";
+			while(std::isalnum(lexer.in.peek()) || lexer.in.peek() == '_')
+				current.value += lexer.in.get();
+
+			if(current.value == "fn")
+				current.type = TokenType::kwd_fn;
+			else if(current.value == "if")
+				current.type = TokenType::kwd_if;
+			else if(current.value == "let")
+				current.type = TokenType::kwd_let;
+			else if(current.value == "else")
+				current.type = TokenType::kwd_else;
+			else
+				current.type = TokenType::idn;
+		}
+		else if(std::isdigit(lexer.in.peek()))
+		{
+			current.type = TokenType::num;
+			current.value = "";
+			while(std::isdigit(lexer.in.peek()) || lexer.in.peek() == '_')
+				current.value += lexer.in.get();
+		}
+		else if(lexer.in.peek() == EOF)
+		{
+			current.type = TokenType::eof;
+			current.value = "<EOF>";
+		}
+		else
+		{
+			current.type = lexer.in.peek();
+			current.value = std::string(1, lexer.in.peek());
+			current = getSpecialToken(lexer, current);
 		}
 
 		return *this;
 	}
 
-	auto Lexer::begin() -> TokenIterator { return TokenIterator{ *this }; }
-}
+	auto Lexer::begin() -> TokenIterator { return TokenIterator{*this}; }
+} // namespace noct
 
 /*
 opr_arrow, // ->

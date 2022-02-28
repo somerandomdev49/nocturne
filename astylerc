@@ -1,0 +1,14 @@
+style=allman
+indent=tab
+attach-closing-while
+min-conditional-indent=0
+max-continuation-indent=88
+pad-oper
+align-pointer=name
+unpad-paren
+remove-braces
+attach-return-type
+convert-tabs
+max-code-length=88
+indent-namespaces
+suffix=none
