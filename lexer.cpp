@@ -137,7 +137,10 @@ namespace noct
 		return *this;
 	}
 
-	auto Lexer::begin() -> TokenIterator { return TokenIterator{*this}; }
+	auto Lexer::begin() -> TokenIterator
+	{
+		return TokenIterator{*this};
+	}
 } // namespace noct
 
 /*

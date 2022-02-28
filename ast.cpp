@@ -3,7 +3,10 @@
 
 namespace noct
 {
-	auto TypecheckEnv::has(const std::string &name) -> bool { return !it_(name).error; }
+	auto TypecheckEnv::has(const std::string &name) -> bool
+	{
+		return !it_(name).error;
+	}
 
 	auto TypecheckEnv::get(const std::string &name) -> Ptr<Type>
 	{
@@ -75,7 +78,7 @@ namespace noct
 	void ASTInt::print(std::ostream &out, int indent) const noexcept
 	{
 		out << Indent(indent) << getNumericTypeName(getSuitableIntegerTypeFor(value))
-			<< " " << value;
+		    << " " << value;
 	}
 
 	TypeRes ASTVar::type(TypecheckEnv &env) const noexcept

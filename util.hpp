@@ -7,25 +7,36 @@
 namespace noct
 {
 	// For some reason, brew clang-11 lacks most concept implementations :(
-	
+
 	template<typename T>
-	concept Integral = requires {
+	concept Integral = requires
+	{
 		requires std::is_integral_v<T>;
 	};
 
 	template<typename T, typename U>
-	concept ConvertibleTo = requires {
+	concept ConvertibleTo = requires
+	{
 		requires std::is_convertible_v<T, U>;
 	};
 
 	template<typename I, typename T>
 	concept Iterator = requires(I i, I j)
 	{
-		{ ++i } -> ConvertibleTo<I>;
-		{  *i } -> ConvertibleTo<T>;
-		{ i == j } -> ConvertibleTo<bool>;
+		{
+			++i
+		}
+		-> ConvertibleTo<I>;
+		{
+			*i
+		}
+		-> ConvertibleTo<T>;
+		{
+			i == j
+		}
+		-> ConvertibleTo<bool>;
 	};
-	
+
 	template<typename I, typename T>
 	concept Iterable = requires(I i)
 	{
@@ -52,8 +63,8 @@ namespace noct
 			auto v = *iter_;
 			return v;
 		}
-		
-		auto peek() -> T&
+
+		auto peek() -> T &
 		{
 			if(buffer_.empty())
 			{
@@ -78,17 +89,24 @@ namespace noct
 
 		BufferedIterable(U &base) : base_(base) {}
 
-		auto begin() const { return BufferedIterator<T, Iterator>(base_.begin()); }
-		auto end() const { return BufferedIterator<T, Iterator>(base_.end()); }
+		auto begin() const
+		{
+			return BufferedIterator<T, Iterator>(base_.begin());
+		}
+		auto end() const
+		{
+			return BufferedIterator<T, Iterator>(base_.end());
+		}
 	private:
-		U &base_;
+		U&base_;
 	};
-	
+
 	template<typename T>
 	using Ptr = std::shared_ptr<T>;
 
 	template<typename T, typename ...Args>
-	auto makePtr(Args &&...args) -> Ptr<T> {
+	auto makePtr(Args &&...args) -> Ptr<T>
+	{
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 
@@ -107,6 +125,9 @@ namespace noct
 		bool error;
 		T value;
 
-		T *operator->() { return &value; }
+		T *operator->()
+		{
+			return &value;
+		}
 	};
 }

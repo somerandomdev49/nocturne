@@ -34,13 +34,13 @@ namespace
 
 	// void error(const std::string &fmt)
 	// {
-	// 	std::cerr << "\033[0;31mError: " << fmt << "\033[0;0m" << std::endl;
+	//  std::cerr << "\033[0;31mError: " << fmt << "\033[0;0m" << std::endl;
 	// }
 
 	// void panic(const std::string &fmt)
 	// {
-	// 	std::cerr << "\033[0;31mPanic!: " << fmt << "\033[0;0m" << std::endl;
-	// 	std::exit(1);
+	//  std::cerr << "\033[0;31mPanic!: " << fmt << "\033[0;0m" << std::endl;
+	//  std::exit(1);
 	// }
 
 } // namespace
@@ -70,8 +70,11 @@ namespace noct
 
 	class Env
 	{
-	  public:
-		auto has(const std::string &name) -> bool { return !it_(name).error; }
+	public:
+		auto has(const std::string &name) -> bool
+		{
+			return !it_(name).error;
+		}
 
 		auto get(const std::string &name) -> Variable *
 		{
@@ -89,7 +92,7 @@ namespace noct
 
 		bool isLoop, isFunc;
 
-	  private:
+	private:
 		using MapType = std::unordered_map<std::string, std::unique_ptr<Variable>>;
 		auto it_(const std::string &name) -> Result<MapType::iterator>
 		{
@@ -137,17 +140,28 @@ namespace noct
 	{
 		switch(t)
 		{
-		case NumericType::u8: return llvm::Type::getInt8Ty(ctx);
-		case NumericType::u16: return llvm::Type::getInt16Ty(ctx);
-		case NumericType::u32: return llvm::Type::getInt32Ty(ctx);
-		case NumericType::u64: return llvm::Type::getInt64Ty(ctx);
-		case NumericType::i8: return llvm::Type::getInt8Ty(ctx);
-		case NumericType::i16: return llvm::Type::getInt16Ty(ctx);
-		case NumericType::i32: return llvm::Type::getInt32Ty(ctx);
-		case NumericType::i64: return llvm::Type::getInt64Ty(ctx);
-		case NumericType::f32: return llvm::Type::getFloatTy(ctx);
-		case NumericType::f64: return llvm::Type::getFloatTy(ctx);
-		default: return nullptr;
+		case NumericType::u8:
+			return llvm::Type::getInt8Ty(ctx);
+		case NumericType::u16:
+			return llvm::Type::getInt16Ty(ctx);
+		case NumericType::u32:
+			return llvm::Type::getInt32Ty(ctx);
+		case NumericType::u64:
+			return llvm::Type::getInt64Ty(ctx);
+		case NumericType::i8:
+			return llvm::Type::getInt8Ty(ctx);
+		case NumericType::i16:
+			return llvm::Type::getInt16Ty(ctx);
+		case NumericType::i32:
+			return llvm::Type::getInt32Ty(ctx);
+		case NumericType::i64:
+			return llvm::Type::getInt64Ty(ctx);
+		case NumericType::f32:
+			return llvm::Type::getFloatTy(ctx);
+		case NumericType::f64:
+			return llvm::Type::getFloatTy(ctx);
+		default:
+			return nullptr;
 		}
 	}
 
@@ -162,8 +176,8 @@ namespace noct
 	llvm::Function *generateFunctionProto(GeneratorImpl &env, FuncDeclaration &decl)
 	{
 		llvm::FunctionType *ft = llvm::FunctionType::get(
-			convertTypeToLLVMType(env, decl.signature.returnType),
-			std::vector<llvm::Type *>(), false);
+		                             convertTypeToLLVMType(env, decl.signature.returnType),
+		                             std::vector<llvm::Type *>(), false);
 
 		llvm::Function *f = llvm::Function::Create(ft, llvm::Function::ExternalLinkage,
 		                                           decl.name, env.codeModule.get());
@@ -193,8 +207,8 @@ namespace noct
 			}
 
 			auto *g = new llvm::GlobalVariable(
-				*env.codeModule, convertTypeToLLVMType(env, node->decl.type), false,
-				llvm::GlobalVariable::ExternalLinkage, initializer, node->decl.name);
+			    *env.codeModule, convertTypeToLLVMType(env, node->decl.type), false,
+			    llvm::GlobalVariable::ExternalLinkage, initializer, node->decl.name);
 
 			env.baseEnv.front().set<Global>(node->decl.name, g);
 			return g;
@@ -248,14 +262,16 @@ namespace noct
 		llvm::Value *gen(GeneratorImpl &env) const noexcept override
 		{
 			llvm::Value *last = nullptr;
-			for(const auto &n : node->nodes) { last = n->impl_->gen(env); }
+			for(const auto &n : node->nodes)
+				last = n->impl_->gen(env);
 
 			return last;
 		}
 
 		void provideImpls(GeneratorImpl &env) const noexcept override
 		{
-			for(const auto &n : node->nodes) { env.provideImpls(n.get()); }
+			for(const auto &n : node->nodes)
+				env.provideImpls(n.get());
 		}
 	};
 
@@ -323,9 +339,7 @@ namespace noct
 			                               llvm::sys::fs::FA_Write);
 
 			if(errorCode)
-			{
 				error("Could not open file '{0}'.", outputObjectFile);
-			}
 
 			machine->addPassesToEmitFile(passManager, dest, nullptr,
 			                             llvm::CGFT_ObjectFile);
@@ -340,9 +354,7 @@ namespace noct
 			                               llvm::sys::fs::FA_Write);
 
 			if(errorCode)
-			{
 				error("Could not open file '{0}'.", outputAssemblyFile);
-			}
 
 			machine->addPassesToEmitFile(passManager, dest, nullptr,
 			                             llvm::CGFT_AssemblyFile);
@@ -355,9 +367,7 @@ namespace noct
 			llvm::raw_fd_ostream dest(outputIRFile, errorCode, llvm::sys::fs::FA_Write);
 
 			if(errorCode)
-			{
 				error("Could not open file '{0}'.", outputIRFile);
-			}
 
 			codeModule->print(dest, nullptr, false, true);
 		}
@@ -366,24 +376,15 @@ namespace noct
 	void GeneratorImpl::provideImpls(AST *ast)
 	{
 		if(auto n = dynamic_cast<ASTInt *>(ast); n != nullptr)
-		{
 			n->impl_ = makePtr<ASTIntImpl>(n);
-		}
 		else if(auto n = dynamic_cast<ASTBlock *>(ast); n != nullptr)
-		{
 			n->impl_ = makePtr<ASTBlockImpl>(n);
-		}
 		else if(auto n = dynamic_cast<ASTFunc *>(ast); n != nullptr)
-		{
 			n->impl_ = makePtr<ASTFuncImpl>(n);
-		}
 		else if(auto n = dynamic_cast<ASTVar *>(ast); n != nullptr)
-		{
 			n->impl_ = makePtr<ASTVarImpl>(n);
-		}
-		else if(auto n = dynamic_cast<ASTVar *>(ast); n != nullptr)
-		{
-		}
+		// else if(auto n = dynamic_cast<ASTVar *>(ast); n != nullptr)
+		// 	n->impl_ = makePtr<ASTVarImpl>(n);
 		else
 			PANIC("Could not provide impl node!");
 
@@ -396,7 +397,10 @@ namespace noct
 		impl = new GeneratorImpl(moduleName);
 	}
 
-	Generator::~Generator() { delete impl; }
+	Generator::~Generator()
+	{
+		delete impl;
+	}
 
 	void Generator::set(GeneratorOpt opt, GeneratorBool value) const
 	{
@@ -410,8 +414,11 @@ namespace noct
 		case GeneratorOpt::ShouldOutputObject:
 			impl->shouldOutputObject = (bool)value;
 			break;
-		case GeneratorOpt::ShouldOutputIR: impl->shouldOutputIR = (bool)value; break;
-		default: assert(0 && "Bad option!");
+		case GeneratorOpt::ShouldOutputIR:
+			impl->shouldOutputIR = (bool)value;
+			break;
+		default:
+			assert(0 && "Bad option!");
 		}
 	}
 
@@ -421,10 +428,17 @@ namespace noct
 
 		switch(opt)
 		{
-		case GeneratorOpt::OutputAssemblyFile: impl->outputAssemblyFile = value; break;
-		case GeneratorOpt::OutputObjectFile: impl->outputObjectFile = value; break;
-		case GeneratorOpt::OutputIRFile: impl->outputIRFile = value; break;
-		default: assert(0 && "Bad option!");
+		case GeneratorOpt::OutputAssemblyFile:
+			impl->outputAssemblyFile = value;
+			break;
+		case GeneratorOpt::OutputObjectFile:
+			impl->outputObjectFile = value;
+			break;
+		case GeneratorOpt::OutputIRFile:
+			impl->outputIRFile = value;
+			break;
+		default:
+			assert(0 && "Bad option!");
 		}
 	}
 
@@ -435,8 +449,8 @@ namespace noct
 	void Generator::generate(AST *func) const
 	{
 #define TRY_CAST(TYPE)                   \
-	auto n = dynamic_cast<TYPE *>(func); \
-	n != nullptr
+    auto n = dynamic_cast<TYPE *>(func); \
+    n != nullptr
 
 		if(TRY_CAST(ASTFunc))
 			impl->generateFunction(n);
@@ -445,5 +459,8 @@ namespace noct
 
 #undef TRY_CAST
 	}
-	void Generator::output() const { impl->output(); }
+	void Generator::output() const
+	{
+		impl->output();
+	}
 } // namespace noct

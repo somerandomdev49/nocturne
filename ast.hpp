@@ -15,13 +15,13 @@ namespace noct
 		auto has(const std::string &name) -> bool;
 		auto get(const std::string &name) -> Ptr<Type>;
 		void set(const std::string &name, Ptr<Type> t);
-	
+
 	private:
 		using MapType = std::unordered_map<std::string, Ptr<Type>>;
 		auto it_(const std::string &name) -> Result<MapType::iterator>;
 		MapType values;
 	};
-	
+
 	struct FuncDeclaration
 	{
 		FuncSignature signature;
@@ -36,7 +36,7 @@ namespace noct
 	};
 
 	using TypeRes = Result<Ptr<Type>>;
-	
+
 	struct ASTNodeImpl;
 
 	struct AST
@@ -78,7 +78,7 @@ namespace noct
 	struct ASTBlock : AST
 	{
 		std::vector<Ptr<AST>> nodes;
-		
+
 		TypeRes type(TypecheckEnv &env) const noexcept override;
 		void print(std::ostream &out, int indent) const noexcept override;
 	};
@@ -88,7 +88,7 @@ namespace noct
 		std::size_t value;
 
 		ASTInt(std::size_t value) : value(value) { }
-		
+
 		TypeRes type(TypecheckEnv &env) const noexcept override;
 		void print(std::ostream &out, int indent) const noexcept override;
 	};

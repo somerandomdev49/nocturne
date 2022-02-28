@@ -16,7 +16,7 @@ namespace noct
 		Ptr<Type> parseTypeAtomic(It &it);
 		Ptr<Type> parseTypeSuffix(It &it, const Ptr<Type> &b);
 		Ptr<Type> parseType(It &it);
-		
+
 		Ptr<AST> parseSuffix(It &it, const Ptr<AST> &b);
 		Ptr<AST> parseAtomic(It &it);
 		Ptr<AST> parsePrefix(It &it);

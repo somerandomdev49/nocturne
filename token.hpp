@@ -7,8 +7,11 @@ namespace noct
 	{
 		char type;
 		std::string value;
-		
-		operator bool() const { return true; }
+
+		operator bool() const
+		{
+			return true;
+		}
 	};
 
 	enum TokenType : char
@@ -38,26 +41,46 @@ namespace noct
 	{
 		switch(t)
 		{
-		case TokenType::eof: return "eof";
-		case TokenType::idn: return "idn";
-		case TokenType::num: return "num";
-		case TokenType::str: return "str";
-		case TokenType::opr_arrow: return "opr_arrow";
-		case TokenType::opr_equal: return "opr_equal";
-		case TokenType::opr_noteq: return "opr_noteq";
-		case TokenType::opr_incnt: return "opr_incnt";
-		case TokenType::opr_decnt: return "opr_decnt";
-		case TokenType::opr_d_amp: return "opr_d_amp";
-		case TokenType::opr_d_bar: return "opr_d_bar";
-		case TokenType::opr_lteql: return "opr_lteql";
-		case TokenType::opr_gteql: return "opr_gteql";
-		case TokenType::opr_shftr: return "opr_shftr";
-		case TokenType::opr_shftl: return "opr_shftl";
-		case TokenType::kwd_fn: return "kwd_fn";
-		case TokenType::kwd_if: return "kwd_if";
-		case TokenType::kwd_let: return "kwd_let";
-		case TokenType::kwd_else: return "kwd_else";
-		default: return "?";
+		case TokenType::eof:
+			return "eof";
+		case TokenType::idn:
+			return "idn";
+		case TokenType::num:
+			return "num";
+		case TokenType::str:
+			return "str";
+		case TokenType::opr_arrow:
+			return "opr_arrow";
+		case TokenType::opr_equal:
+			return "opr_equal";
+		case TokenType::opr_noteq:
+			return "opr_noteq";
+		case TokenType::opr_incnt:
+			return "opr_incnt";
+		case TokenType::opr_decnt:
+			return "opr_decnt";
+		case TokenType::opr_d_amp:
+			return "opr_d_amp";
+		case TokenType::opr_d_bar:
+			return "opr_d_bar";
+		case TokenType::opr_lteql:
+			return "opr_lteql";
+		case TokenType::opr_gteql:
+			return "opr_gteql";
+		case TokenType::opr_shftr:
+			return "opr_shftr";
+		case TokenType::opr_shftl:
+			return "opr_shftl";
+		case TokenType::kwd_fn:
+			return "kwd_fn";
+		case TokenType::kwd_if:
+			return "kwd_if";
+		case TokenType::kwd_let:
+			return "kwd_let";
+		case TokenType::kwd_else:
+			return "kwd_else";
+		default:
+			return "?";
 		}
 	}
 }

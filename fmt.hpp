@@ -5,7 +5,8 @@
 
 namespace noct
 {
-	struct Indent {
+	struct Indent
+	{
 		int indent;
 		int indentWidth;
 		char indentChar;
@@ -18,7 +19,7 @@ namespace noct
 	{
 		for(int i = 0; i < indent.indentWidth * indent.indent; ++i)
 			out.put(indent.indentChar);
-		
+
 		return out;
 	}
 
@@ -26,7 +27,7 @@ namespace noct
 	auto format(const std::string &fmt, Args &&...args) -> std::string
 	{
 		std::stringstream ss;
-		
+
 		for(std::size_t i = 0; i < fmt.size();)
 		{
 			if(fmt[i] == '{')
@@ -36,10 +37,11 @@ namespace noct
 				std::size_t k = fmt[i++] - '0';
 				std::size_t j = 0;
 
-				std::initializer_list<int> _ = {
+				std::initializer_list<int> _ =
+				{
 					(j++, (k == j - 1 ? ((ss << args), 0) : 0))...
 				};
-				
+
 				++i;
 			}
 			else ss << fmt[i++];

@@ -18,13 +18,13 @@ auto main(int argc, char *argv[]) -> int
 
 	// do
 	// {
-	// 	if(it.peek().type > ' ')
-	// 		std::cout << "token: '" << it.peek().type << "'" << std::endl;
-	// 	else
-	// 		std::cout << "token: " <<
+	//  if(it.peek().type > ' ')
+	//      std::cout << "token: '" << it.peek().type << "'" << std::endl;
+	//  else
+	//      std::cout << "token: " <<
 	// noct::tokenTypeToString((noct::TokenType)it.peek().type)
-	// 		          << " '" << it.peek().value << "'" << std::endl;
-	// 	it.get();
+	//                << " '" << it.peek().value << "'" << std::endl;
+	//  it.get();
 	// }
 	// while(it.peek().type != noct::TokenType::eof);
 
