@@ -30,15 +30,25 @@ namespace
 	template<typename ...Args>
 	void debug(const std::string &fmt, Args &&...args)
 	{
-		std::cout << "debug: " << noct::format(fmt, args...) << std::endl;
+		std::cout << "debug: " << noct::format(fmt, std::forward<Args...>(args...)) << std::endl;
 	}
 
 	template<typename ...Args>
 	void error(const std::string &fmt, Args &&...args)
 	{
-		std::cerr << "\033[0;31mError: " << noct::format(fmt, args...)
+		std::cerr << "\033[0;31mError: " << noct::format(fmt, std::forward<Args...>(args...))
 		          << "\033[0;0m" << std::endl;
 	}
+
+	template<typename ...Args>
+	void panic(const std::string &fmt, Args &&...args)
+	{
+		std::cerr << "\033[0;31mPanic!: " << noct::format(fmt, std::forward<Args...>(args...))
+		          << "\033[0;0m" << std::endl;
+		std::exit(1);
+	}
+
+	
 }
 
 namespace noct
@@ -46,13 +56,16 @@ namespace noct
 	struct Variable
 	{
 		Ptr<Type> type;
-		llvm::Type llvmType;
+		llvm::Type *llvmType;
 		std::string name;
 	};
 
 	struct Global : Variable
 	{
-		Ptr<llvm::GlobalVariable> *llvmVar;
+		llvm::GlobalVariable *llvmVar;
+
+		Global(llvm::GlobalVariable *v)
+			: llvmVar(v) {}
 	};
 
 	struct Local : Variable
@@ -68,8 +81,20 @@ namespace noct
 			return !it_(name).error;
 		}
 
-		auto get(const std::string &name) -> Variable*;
-		void set(const std::string &name, Variable *t);
+		auto get(const std::string &name) -> Variable*
+		{
+			if(auto i = it_(name); !i.error)
+				return i.value->second.get();
+			return nullptr;
+		}
+
+		template<typename T, typename ...Args>
+		void set(const std::string &name, Args &&...args)
+		{
+			if(auto i = it_(name); i.error)
+				i.value->second = std::make_unique<T>(std::forward<Args...>(args...));
+		}
+
 
 		bool isLoop, isFunc;
 	
@@ -171,7 +196,7 @@ namespace noct
 			llvm::Constant *initializer = nullptr;
 			if(node->value)
 			{
-				auto v = node->value->impl_->gen(env);
+				auto *v = node->value->impl_->gen(env);
 				if(!llvm::isa<llvm::Constant>(v))
 					initializer = llvm::cast<llvm::Constant>(v);
 				else
@@ -181,11 +206,15 @@ namespace noct
 				}
 			}
 			
-			env.baseEnv.front().set(node->decl.name,
-			llvm::GlobalVariable(
+			auto *g = new llvm::GlobalVariable(
+				*env.codeModule,
 				convertTypeToLLVMType(env, node->decl.type),
 				false, llvm::GlobalVariable::ExternalLinkage,
-				initializer, node->decl.name);
+				initializer, node->decl.name
+			);
+
+			env.baseEnv.front().set<Global>(node->decl.name, g);
+			return g;
 		}
 
 		virtual void provideImpls(GeneratorImpl &env) const noexcept override
@@ -215,15 +244,13 @@ namespace noct
 
 				return f;
 			}
-			else
-			{
-				error("node->body is not an ASTBlock!");
-				f->eraseFromParent();
-				return nullptr;
-			}
+
+			error("node->body is not an ASTBlock!");
+			f->eraseFromParent();
+			return nullptr;
 		}
 
-		virtual void provideImpls(GeneratorImpl &env) const noexcept override
+		void provideImpls(GeneratorImpl &env) const noexcept override
 		{
 			env.provideImpls(node->body.get());
 		}
@@ -246,7 +273,7 @@ namespace noct
 			return last;
 		}
 
-		virtual void provideImpls(GeneratorImpl &env) const noexcept override
+		void provideImpls(GeneratorImpl &env) const noexcept override
 		{
 			for(const auto &n : node->nodes)
 			{
@@ -271,7 +298,7 @@ namespace noct
 			);
 		}
 
-		virtual void provideImpls(GeneratorImpl &env) const noexcept override
+		void provideImpls(GeneratorImpl &env) const noexcept override
 		{
 
 		}
@@ -363,22 +390,23 @@ namespace noct
 
 	void GeneratorImpl::provideImpls(AST *ast)
 	{
-		/**/ if(auto n = dynamic_cast<ASTInt*>(ast); n != nullptr)
+		if(auto n = dynamic_cast<ASTInt*>(ast); n != nullptr)
 		{
-			n->impl_ = Ptr<ASTIntImpl>(new ASTIntImpl(n));
+			n->impl_ = make_ptr<ASTIntImpl>(n);
 		}
 		else if(auto n = dynamic_cast<ASTBlock*>(ast); n != nullptr)
 		{
-			n->impl_ = Ptr<ASTBlockImpl>(new ASTBlockImpl(n));
+			n->impl_ = make_ptr<ASTBlockImpl>(n);
 		}
 		else if(auto n = dynamic_cast<ASTFunc*>(ast); n != nullptr)
 		{
-			n->impl_ = Ptr<ASTFuncImpl>(new ASTFuncImpl(n));
+			n->impl_ = make_ptr<ASTFuncImpl>(n);
 		}
 		else if(auto n = dynamic_cast<ASTVar*>(ast); n != nullptr)
 		{
-			n->impl_ = Ptr<ASTVarImpl>(new ASTVarImpl(n));
+			n->impl_ = make_ptr<ASTVarImpl>(n);
 		}
+		else panic("")
 
 		if(ast->impl_) ast->impl_->provideImpls(*this);
 	}

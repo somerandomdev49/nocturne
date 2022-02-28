@@ -41,7 +41,7 @@ namespace noct
 
 		auto get() -> T
 		{
-			if(buffer_.size() != 0)
+			if(not buffer_.empty())
 			{
 				auto tmp = buffer_.back();
 				buffer_.pop_back();
@@ -55,7 +55,7 @@ namespace noct
 		
 		auto peek() -> T&
 		{
-			if(buffer_.size() == 0)
+			if(not buffer_.empty())
 			{
 				++iter_;
 				auto v = *iter_;
@@ -86,6 +86,11 @@ namespace noct
 	
 	template<typename T>
 	using Ptr = std::shared_ptr<T>;
+
+	template<typename T, typename ...Args>
+	auto make_ptr(Args &&...args) -> Ptr<T> {
+		return std::make_shared(std::forward<Args...>(args...));
+	}
 
 	template<Integral T>
 	constexpr auto pow(T base, T val) -> T

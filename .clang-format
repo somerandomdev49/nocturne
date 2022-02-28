@@ -1,0 +1,36 @@
+
+---
+Language: Cpp
+UseTab: AlignWithSpaces
+BreakBeforeBraces: Allman
+AllowShortIfStatementsOnASingleLine: false
+ColumnLimit: 100
+IndentCaseLabels: false
+SortInlcudes: Never
+SeparateDefinitionBlocks: Always
+ReferenceAlignment: Right
+PointerAlignment: Right
+PackConstructorInitializers: BinPack
+NamespaceIndentation: All
+LambdaBodyIndenation: Signature
+EmptyLineBeforeAccessModifier: Always
+BreakStringLiterals: true
+BreakConstructorInitializers: BeforeColon
+BreakBeforeTernaryOperators: true
+BreakBeforeConceptDeclarations: Always
+BreakBeforeBinaryOperators: Always
+BinPackParameters: true
+AlwaysBreakTemplateDeclarations: Always
+AlwaysBreakBeforeMultilineStrings: false
+AllowShortLoopsOnASingleLine: true
+AllowShortLambdasOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortFunctionsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortBlocksOnASingleLine: true
+AlignTrailingComments: true
+AlignOperands: AlignAfterOperator
+AlignEscapedNewlines: Left
+AlignConsecutiveDeclarations: Consecutive
+AlignArrayOfStructures: Right
+AlignAfterOpenBracket: BlockIndent
