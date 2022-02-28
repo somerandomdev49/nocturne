@@ -1,4 +1,5 @@
 #include "codegen.hpp"
+#include "ast.hpp"
 #include "util.hpp"
 #include "fmt.hpp"
 #include "log.hpp"
@@ -130,7 +131,7 @@ namespace noct
 		void provideImpls(AST *ast);
 	};
 
-	struct ASTNodeImpl
+	struct ASTImpl
 	{
 		virtual llvm::Value *gen(GeneratorImpl &env) const noexcept = 0;
 		virtual void         provideImpls(GeneratorImpl &env) const noexcept = 0;
@@ -185,7 +186,7 @@ namespace noct
 		return f;
 	}
 
-	struct ASTVarImpl : ASTNodeImpl
+	struct ASTVarImpl : ASTImpl
 	{
 		ASTVar *node;
 		ASTVarImpl(ASTVar *node) : node(node) {}
@@ -221,7 +222,12 @@ namespace noct
 		}
 	};
 
-	struct ASTFuncImpl : ASTNodeImpl
+	struct ASTIdnImpl : ASTImpl
+	{
+
+	};
+
+	struct ASTFuncImpl : ASTImpl
 	{
 		ASTFunc *node;
 
@@ -253,7 +259,7 @@ namespace noct
 		}
 	};
 
-	struct ASTBlockImpl : ASTNodeImpl
+	struct ASTBlockImpl : ASTImpl
 	{
 		ASTBlock *node;
 
@@ -275,7 +281,7 @@ namespace noct
 		}
 	};
 
-	struct ASTIntImpl : ASTNodeImpl
+	struct ASTIntImpl : ASTImpl
 	{
 		ASTInt *node;
 
@@ -383,8 +389,8 @@ namespace noct
 			n->impl_ = makePtr<ASTFuncImpl>(n);
 		else if(auto n = dynamic_cast<ASTVar *>(ast); n != nullptr)
 			n->impl_ = makePtr<ASTVarImpl>(n);
-		// else if(auto n = dynamic_cast<ASTVar *>(ast); n != nullptr)
-		// 	n->impl_ = makePtr<ASTVarImpl>(n);
+		else if(auto n = dynamic_cast<ASTIdn *>(ast); n != nullptr)
+			n->impl_ = makePtr<ASTIdnImpl>(n);
 		else
 			PANIC("Could not provide impl node!");
 

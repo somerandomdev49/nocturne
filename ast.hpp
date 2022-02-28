@@ -37,11 +37,11 @@ namespace noct
 
 	using TypeRes = Result<Ptr<Type>>;
 
-	struct ASTNodeImpl;
+	struct ASTImpl;
 
 	struct AST
 	{
-		Ptr<struct ASTNodeImpl> impl_;
+		Ptr<struct ASTImpl> impl_;
 
 		virtual TypeRes type(TypecheckEnv &env) const noexcept = 0;
 		virtual void print(std::ostream &out, int indent) const noexcept = 0;

@@ -7,3 +7,5 @@ bin
 .ninja_*
 compile_commands.json
 .cache
+.cache/*
+.cache/**/*
